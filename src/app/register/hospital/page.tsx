@@ -65,19 +65,115 @@ export default function HospitalRegisterPage() {
     router.push('/pending-approval');
   };
 
-  return (
-    <main style={{ padding: 30, maxWidth: 400 }}>
-      <h1>Hospital Registration</h1>
+return (
+  <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <div className="w-full max-w-md bg-white border rounded-xl shadow-sm p-6">
+      
+      <h1 className="text-2xl font-semibold text-gray-900 mb-1">
+        Hospital Registration
+      </h1>
+      <p className="text-sm text-gray-500 mb-6">
+        Register your hospital to participate in approved clinical trials.
+      </p>
 
-      <input placeholder="Hospital Name" onChange={e => setName(e.target.value)} />
-      <input placeholder="Registration Number" onChange={e => setRegistrationNumber(e.target.value)} />
-      <input placeholder="Country" onChange={e => setCountry(e.target.value)} />
-      <input placeholder="Email" onChange={e => setEmail(e.target.value)} />
-      <input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
+      <div className="space-y-4">
+        {/* Hospital Name */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Hospital Name
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. Apollo Medical Center"
+            onChange={e => setName(e.target.value)}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm
+                       text-gray-900 caret-blue-600
+                       placeholder:text-gray-600
+                       focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-      <button onClick={handleRegister}>Register</button>
+        {/* Registration Number */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Registration Number
+          </label>
+          <input
+            type="text"
+            placeholder="Official hospital registration ID"
+            onChange={e => setRegistrationNumber(e.target.value)}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm
+                       text-gray-900 caret-blue-600
+                       placeholder:text-gray-600
+                       focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-    </main>
-  );
+        {/* Country */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Country
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. India"
+            onChange={e => setCountry(e.target.value)}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm
+                       text-gray-900 caret-blue-600
+                       placeholder:text-gray-600
+                       focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Email */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Official Email
+          </label>
+          <input
+            type="email"
+            placeholder="admin@hospital.org"
+            onChange={e => setEmail(e.target.value)}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm
+                       text-gray-900 caret-blue-600
+                       placeholder:text-gray-600
+                       focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Password */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Password
+          </label>
+          <input
+            type="password"
+            placeholder="Create a secure password"
+            onChange={e => setPassword(e.target.value)}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm
+                       text-gray-900 caret-blue-600
+                       placeholder:text-gray-600
+                       focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Error */}
+        {error && (
+          <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+            {error}
+          </p>
+        )}
+
+        {/* Submit */}
+        <button
+          onClick={handleRegister}
+          className="w-full rounded-md bg-blue-600 text-white py-2 text-sm font-medium hover:bg-blue-700"
+        >
+          Register Hospital
+        </button>
+      </div>
+    </div>
+  </main>
+);
+
 }
