@@ -8,7 +8,7 @@ type Trial = {
   id: string;
   title: string;
   phase: string;
-  status: 'draft' | 'active';
+  status: 'draft' | 'active' | 'ended';
   created_at: string;
   start_date: string | null;
   expected_end_date: string | null;
@@ -17,7 +17,7 @@ type Trial = {
 export default function RegulatorTrialsPage() {
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<'active' | 'draft'>('active');
+  const [activeTab, setActiveTab] = useState<'active' | 'draft' | 'ended'>('active');
   const [trials, setTrials] = useState<Trial[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -90,6 +90,17 @@ export default function RegulatorTrialsPage() {
           >
             Draft Trials
           </button>
+
+          <button
+            onClick={() => setActiveTab('ended')}
+            className={`px-4 py-2 rounded-md text-sm font-medium
+            ${activeTab === 'ended'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white border text-gray-700'}
+          `}
+          >
+            Ended Trials
+          </button>
         </div>
 
         {/* Content */}
@@ -126,7 +137,9 @@ export default function RegulatorTrialsPage() {
                       className={`text-xs font-medium px-2 py-1 rounded-full
                         ${trial.status === 'active'
                           ? 'bg-green-100 text-green-700'
-                          : 'bg-yellow-100 text-yellow-700'}
+                          : trial.status === 'draft'
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : 'bg-gray-200 text-gray-700'}
                       `}
                     >
                       {trial.status.toUpperCase()}
