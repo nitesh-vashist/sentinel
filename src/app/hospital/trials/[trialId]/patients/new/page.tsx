@@ -12,6 +12,7 @@ export default function RegisterPatientPage() {
   const [subjectCode, setSubjectCode] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [trialStatus, setTrialStatus] = useState<'draft' | 'active' | 'ended' | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   /* ---------------- LOAD & AUTHORIZE ---------------- */
@@ -52,6 +53,14 @@ export default function RegisterPatientPage() {
       }
 
       setHospitalId(userRow.hospital_id);
+
+      const { data: trial } = await supabase
+        .from('trials')
+        .select('status')
+        .eq('id', trialId)
+        .single();
+
+      setTrialStatus(trial?.status ?? null);
     };
 
     init();
@@ -65,6 +74,18 @@ export default function RegisterPatientPage() {
     try {
       setSubmitting(true);
       setError(null);
+
+          // 🔒 BACKEND GUARD
+    const { data: trial } = await supabase
+      .from('trials')
+      .select('status')
+      .eq('id', trialId)
+      .single();
+
+    if (!trial || trial.status !== 'active') {
+      setError('Trial has ended. New patients cannot be registered.');
+      return;
+    }
 
       const { error } = await supabase.from('patients').insert({
         trial_id: trialId,
@@ -137,12 +158,17 @@ export default function RegisterPatientPage() {
 
           <button
             onClick={registerPatient}
-            disabled={submitting}
+            disabled={submitting || trialStatus !== 'active'}
             className="px-4 py-2 text-sm rounded-md bg-blue-600 text-white
                        disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {submitting ? 'Registering…' : 'Register Patient'}
           </button>
+          {trialStatus === 'ended' && (
+            <p className="text-sm text-red-600 mt-2">
+              This trial has ended. New patients cannot be added.
+            </p>
+          )}
         </div>
 
       </div>

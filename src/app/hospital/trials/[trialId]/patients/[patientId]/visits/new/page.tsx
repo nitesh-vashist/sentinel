@@ -28,6 +28,7 @@ export default function NewVisitPage() {
   const [formValues, setFormValues] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [trialStatus, setTrialStatus] = useState<'draft' | 'active' | 'ended' | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   /* ---------------- LOAD & AUTHORIZE ---------------- */
@@ -78,6 +79,14 @@ export default function NewVisitPage() {
 
       setFields(crf || []);
       setLoading(false);
+
+      const { data: trial } = await supabase
+        .from('trials')
+        .select('status')
+        .eq('id', trialId)
+        .single();
+
+      setTrialStatus(trial?.status ?? null);
     };
 
     load();
@@ -135,6 +144,18 @@ export default function NewVisitPage() {
     setError(null);
 
     if (!hospitalId) return;
+
+    // 🔒 BACKEND GUARD
+    const { data: trial } = await supabase
+      .from('trials')
+      .select('status')
+      .eq('id', trialId)
+      .single();
+
+    if (!trial || trial.status !== 'active') {
+      setError('Trial has ended. New visits cannot be submitted.');
+      return;
+    }
 
     // 1️⃣ determine visit number
     const { data: lastVisit } = await supabase
@@ -332,13 +353,17 @@ export default function NewVisitPage() {
 
         <button
           onClick={submitVisit}
-          disabled={submitting}
+          disabled={submitting || trialStatus !== 'active'}
           className="bg-blue-600 text-white px-6 py-3 rounded-md font-medium
                      disabled:opacity-60"
         >
           {submitting ? 'Submitting…' : 'Submit Visit'}
         </button>
-
+        {trialStatus === 'ended' && (
+          <p className="text-sm text-red-600 mt-2">
+            This trial has ended. New visits cannot be submitted.
+          </p>
+        )}
       </div>
     </main>
   );
