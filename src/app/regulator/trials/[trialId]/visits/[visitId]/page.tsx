@@ -41,6 +41,17 @@ export default function RegulatorVisitPage() {
     'verified' | 'tampered' | null
   >(null);
 
+const [chainStatus, setChainStatus] = useState<
+  'verified' | 'tampered' | null
+>(null);
+
+const [verifyingChain, setVerifyingChain] = useState(false);
+const [chainError, setChainError] = useState<string | null>(null);
+
+const [dbMerkleRoot, setDbMerkleRoot] = useState<string | null>(null);
+const [chainMerkleRoot, setChainMerkleRoot] = useState<string | null>(null);
+const [chainDayIndex, setChainDayIndex] = useState<number | null>(null);
+
   /* ---------------- HASHING (DO NOT CHANGE) ---------------- */
 
   const generateVisitHash = (
@@ -50,9 +61,11 @@ export default function RegulatorVisitPage() {
       value_text: string | null;
       value_number: number | null;
       value_boolean: boolean | null;
-    }[]
+    }[],
+    previousHash: string | null
   ) => {
     const snapshot = {
+      previous_hash: previousHash,
       visit_id: visitId,
       values: values
         .map(v => ({
@@ -104,7 +117,7 @@ export default function RegulatorVisitPage() {
       // 3️⃣ Stored hash
       const { data: hashRow } = await supabase
         .from('visit_hashes')
-        .select('hash')
+        .select('hash, previous_hash')
         .eq('visit_id', visitId)
         .single();
 
@@ -122,7 +135,8 @@ export default function RegulatorVisitPage() {
           value_text: v.value_text,
           value_number: v.value_number,
           value_boolean: v.value_boolean,
-        }))
+        })),
+        hashRow?.previous_hash ?? null
       );
 
       setComputedHash(recomputed);
@@ -140,6 +154,72 @@ export default function RegulatorVisitPage() {
   if (!visit) {
     return <p className="p-10 text-gray-600">Loading visit…</p>;
   }
+
+  const verifyOnBlockchain = async () => {
+  try {
+    setVerifyingChain(true);
+    setChainError(null);
+    setChainStatus(null);
+
+    // 1️⃣ get anchor_id for this visit
+    const { data: visitHashRow } = await supabase
+      .from('visit_hashes')
+      .select('anchor_id')
+      .eq('visit_id', visitId)
+      .single();
+
+    if (!visitHashRow?.anchor_id) {
+      setChainError('Visit not yet anchored on blockchain');
+      return;
+    }
+
+    // 2️⃣ fetch anchor details
+    const { data: anchor } = await supabase
+      .from('merkle_anchors')
+      .select('merkle_root, period_start')
+      .eq('id', visitHashRow.anchor_id)
+      .single();
+
+    if (!anchor) {
+      setChainError('Anchor record not found');
+      return;
+    }
+
+    // 3️⃣ call backend API to fetch on-chain root
+    const res = await fetch('/api/blockchain/verify-anchor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        trialId,
+        periodStart: anchor.period_start,
+      }),
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      setChainError(result.error || 'Blockchain verification failed');
+      return;
+    }
+
+    // 4️⃣ compare roots
+    setDbMerkleRoot(anchor.merkle_root);
+    setChainMerkleRoot(result.onChainRoot);
+    setChainDayIndex(result.dayIndex);
+    if (result.onChainRoot === anchor.merkle_root) {
+      setChainStatus('verified');
+    } else {
+      setChainStatus('tampered');
+    }
+
+  } catch (err) {
+    console.error(err);
+    setChainError('Unexpected verification error');
+  } finally {
+    setVerifyingChain(false);
+  }
+};
+
 
   /* ---------------- UI ---------------- */
 
@@ -171,6 +251,59 @@ export default function RegulatorVisitPage() {
             </div>
           </div>
         )}
+
+        {/* Blockchain Verification */}
+        <section className="bg-white border rounded-xl p-6">
+          <h3 className="text-lg font-medium mb-4 text-gray-900">
+            Blockchain Verification
+          </h3>
+
+          <button
+            onClick={verifyOnBlockchain}
+            disabled={verifyingChain}
+            className="bg-indigo-600 text-white px-4 py-2 rounded-md
+               disabled:opacity-60"
+          >
+            {verifyingChain ? 'Verifying…' : 'Verify on Blockchain'}
+          </button>
+
+          {chainStatus && (
+            <div
+              className={`mt-4 border rounded-lg p-4 text-sm break-all ${chainStatus === 'verified'
+                  ? 'bg-green-50 border-green-300 text-green-800'
+                  : 'bg-red-50 border-red-300 text-red-800'
+                }`}
+            >
+              <div className="font-medium mb-2">
+                Blockchain Status: {chainStatus.toUpperCase()}
+              </div>
+
+              {dbMerkleRoot && (
+                <div>
+                  <b>DB Merkle Root:</b> {dbMerkleRoot}
+                </div>
+              )}
+
+              {chainMerkleRoot && (
+                <div className="mt-1">
+                  <b>On-chain Merkle Root:</b> {chainMerkleRoot}
+                </div>
+              )}
+
+              {chainDayIndex !== null && (
+                <div className="mt-1 text-xs opacity-80">
+                  Day Index: {chainDayIndex}
+                </div>
+              )}
+            </div>
+          )}
+
+          {chainError && (
+            <div className="mt-4 text-sm text-red-600">
+              {chainError}
+            </div>
+          )}
+        </section>
 
         {/* Values */}
         <section className="bg-white border rounded-xl p-6">
