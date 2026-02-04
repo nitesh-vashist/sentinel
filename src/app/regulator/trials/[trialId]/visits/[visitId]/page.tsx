@@ -50,6 +50,7 @@ const [chainError, setChainError] = useState<string | null>(null);
 
 const [dbMerkleRoot, setDbMerkleRoot] = useState<string | null>(null);
 const [chainMerkleRoot, setChainMerkleRoot] = useState<string | null>(null);
+const[recomputedMerkleRoot, setRecomputedMerkleRoot] = useState<string | null>(null);
 const [chainDayIndex, setChainDayIndex] = useState<number | null>(null);
 
   /* ---------------- HASHING (DO NOT CHANGE) ---------------- */
@@ -190,8 +191,9 @@ const [chainDayIndex, setChainDayIndex] = useState<number | null>(null);
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        trialId,
-        periodStart: anchor.period_start,
+        // trialId,
+        // periodStart: anchor.period_start,
+        anchorId: visitHashRow.anchor_id,
       }),
     });
 
@@ -205,8 +207,9 @@ const [chainDayIndex, setChainDayIndex] = useState<number | null>(null);
     // 4️⃣ compare roots
     setDbMerkleRoot(anchor.merkle_root);
     setChainMerkleRoot(result.onChainRoot);
+    setRecomputedMerkleRoot(result.recomputedRoot);
     setChainDayIndex(result.dayIndex);
-    if (result.onChainRoot === anchor.merkle_root) {
+    if (result.recomputedRoot === result.onChainRoot && result.onChainRoot === anchor.merkle_root) {
       setChainStatus('verified');
     } else {
       setChainStatus('tampered');
@@ -287,6 +290,12 @@ const [chainDayIndex, setChainDayIndex] = useState<number | null>(null);
               {chainMerkleRoot && (
                 <div className="mt-1">
                   <b>On-chain Merkle Root:</b> {chainMerkleRoot}
+                </div>
+              )}
+
+              {recomputedMerkleRoot && (
+                <div className="mt-1">
+                  <b>Recomputed Merkle Root:</b> {recomputedMerkleRoot}
                 </div>
               )}
 

@@ -117,7 +117,10 @@ export async function runVisitAnchoringJob() {
 
   for (const [trialId, hashes] of byTrial.entries()) {
     /* ---- build merkle tree ---- */
-    const leafHashes = hashes.map(h => h.hash);
+    // const leafHashes = hashes.map(h => h.hash);
+    const leafHashes = hashes
+      .sort((a, b) => a.visit_id.localeCompare(b.visit_id))
+      .map(h => h.hash);
     const { root } = buildMerkleTree(leafHashes);
 
     /* ---- store anchor record ---- */
