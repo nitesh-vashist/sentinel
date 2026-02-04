@@ -1,0 +1,11 @@
+{
+  "crons": [
+    {
+      "path": "/api/blockchain/anchor-visit",
+      "schedule": "0 0 * * *",
+      "headers": {
+        "x-cron-secret": "@cron_secret"
+      }
+    }
+  ]
+}
