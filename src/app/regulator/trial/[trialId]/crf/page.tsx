@@ -177,11 +177,11 @@ export default function CRFPage() {
 
         {/* ADD TYPE C */}
         <section className="bg-white border rounded-xl p-6">
-          <h3 className="text-lg font-medium mb-4">
+          <h3 className="text-lg font-medium mb-4 text-gray-900">
             Add Trial-Specific Fields (Type C)
           </h3>
 
-          <div className="space-y-3">
+          <div className="space-y-3 text-gray-900">
             <input
               placeholder="Field label"
               value={newField.field_label}
