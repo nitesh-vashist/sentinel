@@ -38,6 +38,10 @@ export default function RegulatorHospitalPage() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [aiSummary, setAiSummary] = useState<{
+  risk_score: number;
+  risk_level: 'LOW' | 'MEDIUM' | 'HIGH';
+  } | null>(null);
   /* ---------------- LOAD DATA ---------------- */
 
   useEffect(() => {
@@ -77,6 +81,21 @@ export default function RegulatorHospitalPage() {
         .eq('hospital_id', hospitalId)
         .order('enrolled_at', { ascending: true });
 
+      // 4️⃣ fetch latest AI risk summary
+      const { data: aiData } = await supabase
+        .from('ai_hospital_scores')
+        .select('risk_score, risk_level')
+        .eq('trial_id', trialId)
+        .eq('hospital_id', hospitalId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (aiData) {
+        setAiSummary(aiData);
+      }
+
+
       const normalizedPatients: Patient[] =
         patientsData?.map((p: any) => ({
           id: p.id,
@@ -103,28 +122,61 @@ export default function RegulatorHospitalPage() {
       <div className="max-w-5xl mx-auto space-y-8">
 
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">
-            {hospital.name}
-          </h1>
-          <p className="text-sm text-gray-600 mt-1">
-            Registration No: {hospital.registration_number}
-          </p>
-          <p className="text-sm mt-2">
-            Trial Status:{' '}
-            <span
-              className={`font-medium ${
-                trialHospital.status === 'accepted'
-                  ? 'text-green-700'
-                  : trialHospital.status === 'pending'
-                  ? 'text-yellow-700'
-                  : 'text-red-700'
-              }`}
-            >
-              {trialHospital.status.toUpperCase()}
-            </span>
-          </p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900">
+              {hospital.name}
+            </h1>
+            <p className="text-sm text-gray-600 mt-1">
+              Registration No: {hospital.registration_number}
+            </p>
+            <p className="text-sm mt-2">
+              Trial Status:{' '}
+              <span
+                className={`font-medium ${trialHospital.status === 'accepted'
+                    ? 'text-green-700'
+                    : trialHospital.status === 'pending'
+                      ? 'text-yellow-700'
+                      : 'text-red-700'
+                  }`}
+              >
+                {trialHospital.status.toUpperCase()}
+              </span>
+            </p>
+          </div>
+
+          {/* AI Risk Summary */}
+          {aiSummary && (
+            <div className="bg-white border rounded-xl p-4 text-right space-y-2">
+              <div
+                className={`text-sm font-semibold ${aiSummary.risk_level === 'LOW'
+                    ? 'text-green-700'
+                    : aiSummary.risk_level === 'MEDIUM'
+                      ? 'text-yellow-700'
+                      : 'text-red-700'
+                  }`}
+              >
+                AI Risk: {aiSummary.risk_level}
+              </div>
+
+              <div className="text-xs text-gray-600">
+                Score: {aiSummary.risk_score} / 100
+              </div>
+
+              <button
+                onClick={() =>
+                  router.push(
+                    `/regulator/trials/${trialId}/hospitals/${hospitalId}/ai-analysis`
+                  )
+                }
+                className="text-xs text-blue-600 hover:underline"
+              >
+                Detailed AI Analysis →
+              </button>
+            </div>
+          )}
         </div>
+
 
         {/* Patients */}
         <section className="bg-white border rounded-xl p-6">
