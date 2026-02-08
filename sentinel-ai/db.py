@@ -5,6 +5,16 @@ from config import DB_URL
 def get_connection():
     return psycopg2.connect(DB_URL)
 
+def fetch_active_trials():
+    query = """
+        SELECT id
+        FROM trials
+        WHERE status = 'active'
+    """
+    df = pd.read_sql(query, get_connection())
+    return df["id"].tolist()
+
+
 def fetch_locked_visits(trial_id):
     query = """
     SELECT
