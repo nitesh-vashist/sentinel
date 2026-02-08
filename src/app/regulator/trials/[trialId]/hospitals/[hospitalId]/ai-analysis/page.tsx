@@ -123,6 +123,17 @@ export default function RegulatorHospitalAIAnalysisPage() {
           ← Back to Hospital
         </button>
 
+        <button
+        onClick={async () => {
+          await fetch("/api/run-ai", {
+            method: "POST",
+            body: JSON.stringify({ trialId }),
+          });
+        }}
+      >
+        Re-Run AI Analysis
+      </button>
+
         {/* Overall Risk */}
         <section className="bg-white border rounded-xl p-6">
           {sectionTitle(
