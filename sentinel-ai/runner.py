@@ -12,6 +12,8 @@ from detectors.behavioral import (
     detect_behavioral_anomalies
 )
 
+
+
 from persistence.writer import (
     create_ai_run,
     save_hospital_scores,
@@ -59,16 +61,37 @@ def run_ai_for_trial(trial_id, triggered_by=None):
         # -----------------------------
         behavioral_features = extract_behavioral_features(df)
 
-        if behavioral_features:
-            behavioral_baseline = build_behavioral_baseline(
-                behavioral_features
-            )
-            task2_results = detect_behavioral_anomalies(
-                behavioral_features,
-                behavioral_baseline
-            )
-        else:
-            task2_results = {}
+        # if behavioral_features:
+        #     behavioral_baseline = build_behavioral_baseline(
+        #         behavioral_features
+        #     )
+        #     task2_results = detect_behavioral_anomalies(
+        #         behavioral_features,
+        #         behavioral_baseline
+        #     )
+        # else:
+        #     task2_results = {}
+
+        # behavioral_baseline = build_behavioral_baseline(behavioral_features)
+        # task2_results = detect_behavioral_anomalies(
+        #     behavioral_features,
+        #     behavioral_baseline
+        # )
+
+        behavioral_baseline = build_behavioral_baseline(behavioral_features)
+
+        task2_results = detect_behavioral_anomalies(
+            behavioral_features,
+            baseline=behavioral_baseline,
+            trial_phase="PHASE_3"
+        )
+
+
+
+        print("DEBUG TASK 2 RAW OUTPUT:")
+        for k, v in task2_results.items():
+            print(k, v)
+
 
         # -----------------------------
         # Task 3: Cross-patient templating (in-memory only)
