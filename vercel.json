@@ -6,6 +6,13 @@
       "headers": {
         "x-cron-secret": "@cron_secret"
       }
+    },
+    {
+      "path": "/api/cron/run-ai",
+      "schedule": "0 1 * * *",
+      "headers": {
+        "x-cron-secret": "@cron_secret"
+      }
     }
   ]
 }
