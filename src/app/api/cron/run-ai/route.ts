@@ -1,4 +1,10 @@
-export async function POST() {
+export async function POST(req: Request) {
+  const isCron = req.headers.get("x-vercel-cron") === "1";
+
+  if (!isCron) {
+    return new Response("Forbidden", { status: 403 });
+  }
+
   const res = await fetch(
     `${process.env.AI_ENGINE_URL}/cron/run-daily-ai`,
     {
