@@ -2,11 +2,11 @@
   "crons": [
     {
       "path": "/api/blockchain/anchor-visit",
-      "schedule": "*/5 * * * *"
+      "schedule": "35 21 * * *"
     },
     {
       "path": "/api/cron/run-ai",
-      "schedule": "*/5 * * * *"
+      "schedule": "36 21 * * *"
     }
   ]
 }
