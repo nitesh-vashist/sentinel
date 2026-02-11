@@ -1,7 +1,7 @@
 export async function POST(req: Request) {
   const isCron = req.headers.get("x-vercel-cron") === "1";
 
-  console.log("AI cron endpoint hit");
+  console.log("AI cron endpoint hit",new Date().toISOString());
 
   if (!isCron) {
     console.log("Blocked non-cron request");
