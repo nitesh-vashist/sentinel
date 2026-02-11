@@ -3,6 +3,8 @@ from runner import run_ai_for_trial
 from db import fetch_active_trials
 import os 
 
+# to run api locally : 1).\venv\Scripts\activate, 2)python -m uvicorn api:app --reload --port 8001
+
 app = FastAPI()
 
 CRON_SECRET = os.getenv("CRON_SECRET")
@@ -27,3 +29,8 @@ def run_ai(trial_id: str):
         return {"status": "completed", "trial_id": trial_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/health")
+def health():
+    return {"status": "awake"}
+
