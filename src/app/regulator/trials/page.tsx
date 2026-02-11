@@ -26,7 +26,7 @@ export default function RegulatorTrialsPage() {
   useEffect(() => {
     const loadTrials = async () => {
       setLoading(true);
-
+      fetch("/api/warmup-ai"); // no await
       const { data, error } = await supabase
         .from('trials')
         .select(`

@@ -94,6 +94,9 @@ export default function HospitalDashboard() {
 
       if (!user) return;
 
+      fetch("/api/warmup-ai"); // no await
+
+
       // 2️⃣ Get hospital_id
       const { data: userRow } = await supabase
         .from('users')

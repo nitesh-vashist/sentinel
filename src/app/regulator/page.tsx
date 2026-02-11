@@ -20,6 +20,9 @@ export default function RegulatorDashboard() {
         return;
       }
 
+      fetch("/api/warmup-ai"); // no await
+
+
       const { data: userRow } = await supabase
         .from('users')
         .select('role, full_name')
