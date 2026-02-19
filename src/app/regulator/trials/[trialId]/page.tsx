@@ -116,6 +116,16 @@ export default function RegulatorTrialPage() {
   return (
     <main className="min-h-screen bg-gray-50 px-6 py-8">
       <div className="max-w-6xl mx-auto space-y-8">
+        <div className="mb-4">
+          <button
+            onClick={() => router.push('/regulator/trials')}
+            className="flex items-center gap-2 text-sm text-gray-600
+                      hover:text-gray-900 transition"
+          >
+            <span className="text-lg">←</span>
+            <span>Back</span>
+          </button>
+        </div>
 
         {/* Header */}
         <div className="flex justify-between items-start">

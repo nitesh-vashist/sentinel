@@ -100,6 +100,16 @@ export default function VisitDetailPage() {
   return (
     <main className="min-h-screen bg-gray-50 px-6 py-8">
       <div className="max-w-4xl mx-auto space-y-6">
+        <div className="mb-4">
+          <button
+            onClick={() => router.push(`/hospital/trials/${trialId}/patients/${patientId}`)}
+            className="flex items-center gap-2 text-sm text-gray-600
+                      hover:text-gray-900 transition"
+          >
+            <span className="text-lg">←</span>
+            <span>Back</span>
+          </button>
+        </div>
 
         {/* Header */}
         <div>
@@ -139,18 +149,6 @@ export default function VisitDetailPage() {
 
           </div>
         </section>
-
-        {/* Back */}
-        <button
-          onClick={() =>
-            router.push(
-              `/hospital/trials/${trialId}/patients/${patientId}`
-            )
-          }
-          className="text-sm text-blue-600 hover:underline"
-        >
-          ← Back to patient
-        </button>
 
       </div>
     </main>

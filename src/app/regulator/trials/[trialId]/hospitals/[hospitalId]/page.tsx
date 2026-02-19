@@ -36,6 +36,7 @@ export default function RegulatorHospitalPage() {
   const [hospital, setHospital] = useState<Hospital | null>(null);
   const [trialHospital, setTrialHospital] = useState<TrialHospital | null>(null);
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [runningAI, setRunningAI] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [aiSummary, setAiSummary] = useState<{
@@ -117,9 +118,41 @@ export default function RegulatorHospitalPage() {
     return <p className="p-10 text-gray-600">Loading hospital…</p>;
   }
 
+  const handleRunAI = async () => {
+    try {
+      setRunningAI(true);
+
+      await fetch("/api/run-ai", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ trialId }),
+      });
+
+      // Reload to fetch updated AI summary
+      router.refresh();
+    } catch (err) {
+      alert("Failed to run AI analysis");
+    } finally {
+      setRunningAI(false);
+    }
+
+  };
+
   return (
     <main className="min-h-screen bg-gray-50 px-6 py-8">
       <div className="max-w-5xl mx-auto space-y-8">
+        <div className="mb-4">
+          <button
+            onClick={() => router.push(`/regulator/trials/${trialId}`)}
+            className="flex items-center gap-2 text-sm text-gray-600
+                      hover:text-gray-900 transition"
+          >
+            <span className="text-lg">←</span>
+            <span>Back</span>
+          </button>
+        </div>
 
         {/* Header */}
         <div className="flex justify-between items-start">
@@ -145,36 +178,69 @@ export default function RegulatorHospitalPage() {
             </p>
           </div>
 
-          {/* AI Risk Summary */}
-          {aiSummary && (
-            <div className="bg-white border rounded-xl p-4 text-right space-y-2">
-              <div
-                className={`text-sm font-semibold ${aiSummary.risk_level === 'LOW'
-                    ? 'text-green-700'
-                    : aiSummary.risk_level === 'MEDIUM'
-                      ? 'text-yellow-700'
-                      : 'text-red-700'
+          {/* AI Section */}
+          <div className="text-right space-y-3">
+
+            {/* If AI summary exists */}
+            {aiSummary ? (
+              <>
+                <div className="bg-white border rounded-xl p-4 space-y-2">
+                  <div
+                    className={`text-sm font-semibold ${aiSummary.risk_level === 'LOW'
+                        ? 'text-green-700'
+                        : aiSummary.risk_level === 'MEDIUM'
+                          ? 'text-yellow-700'
+                          : 'text-red-700'
+                      }`}
+                  >
+                    AI Risk: {aiSummary.risk_level}
+                  </div>
+
+                  <div className="text-xs text-gray-600">
+                    Score: {aiSummary.risk_score} / 100
+                  </div>
+
+                  <button
+                    onClick={() =>
+                      router.push(
+                        `/regulator/trials/${trialId}/hospitals/${hospitalId}/ai-analysis`
+                      )
+                    }
+                    className="text-xs text-blue-600 hover:underline"
+                  >
+                    Detailed AI Analysis →
+                  </button>
+                </div>
+
+                {/* Re-run button */}
+                <button
+                  onClick={handleRunAI}
+                  disabled={runningAI}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition
+          ${runningAI
+                      ? "bg-gray-400 text-white cursor-not-allowed"
+                      : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                    }`}
+                >
+                  {runningAI ? "Running AI..." : "Re-Run AI Analysis"}
+                </button>
+              </>
+            ) : (
+              /* If AI summary does NOT exist */
+              <button
+                onClick={handleRunAI}
+                disabled={runningAI}
+                className={`px-5 py-2 rounded-md text-sm font-medium transition
+        ${runningAI
+                    ? "bg-gray-400 text-white cursor-not-allowed"
+                    : "bg-indigo-600 hover:bg-indigo-700 text-white"
                   }`}
               >
-                AI Risk: {aiSummary.risk_level}
-              </div>
-
-              <div className="text-xs text-gray-600">
-                Score: {aiSummary.risk_score} / 100
-              </div>
-
-              <button
-                onClick={() =>
-                  router.push(
-                    `/regulator/trials/${trialId}/hospitals/${hospitalId}/ai-analysis`
-                  )
-                }
-                className="text-xs text-blue-600 hover:underline"
-              >
-                Detailed AI Analysis →
+                {runningAI ? "Running AI..." : "Run AI Analysis"}
               </button>
-            </div>
-          )}
+            )}
+          </div>
+
         </div>
 
 

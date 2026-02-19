@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function RegulatorHospitalsPage() {
+  const router = useRouter();
   const [hospitals, setHospitals] = useState<any[]>([]);
 
   useEffect(() => {
@@ -29,7 +31,14 @@ export default function RegulatorHospitalsPage() {
 return (
   <main className="min-h-screen bg-gray-50 px-6 py-8">
     <div className="max-w-4xl mx-auto">
-      
+     <button
+      onClick={() => router.push('/regulator')}
+      className="flex items-center gap-2 text-sm text-gray-600
+                hover:text-gray-900 transition"
+    >
+      <span className="text-lg">←</span>
+      <span>Back</span>
+    </button> 
       <h1 className="text-2xl font-semibold text-gray-900 mb-1">
         Hospital Verification
       </h1>

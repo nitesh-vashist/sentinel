@@ -116,6 +116,16 @@ export default function RegisterPatientPage() {
   return (
     <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="bg-white w-full max-w-md rounded-xl shadow-lg p-6 space-y-5">
+        <div className="mb-4">
+          <button
+            onClick={() => router.push(`/hospital/trials/${trialId}`)}
+            className="flex items-center gap-2 text-sm text-gray-600
+                      hover:text-gray-900 transition"
+          >
+            <span className="text-lg">←</span>
+            <span>Back</span>
+          </button>
+        </div>
 
         <h1 className="text-lg font-semibold text-gray-900">
           Register New Patient
