@@ -41,6 +41,12 @@ export default function RegulatorDashboard() {
     load();
   }, [router]);
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.replace('/'); // replace prevents back navigation
+  };
+
+
   if (loading) {
     return <p className="p-10 text-gray-600">Loading dashboard…</p>;
   }
@@ -50,16 +56,27 @@ export default function RegulatorDashboard() {
       <div className="max-w-5xl mx-auto space-y-8">
 
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">
-            Regulator Dashboard
-          </h1>
-          {regulatorName && (
-            <p className="text-sm text-gray-600 mt-1">
-              Welcome, {regulatorName}
-            </p>
-          )}
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900">
+              Regulator Dashboard
+            </h1>
+            {regulatorName && (
+              <p className="text-sm text-gray-600 mt-1">
+                Welcome, {regulatorName}
+              </p>
+            )}
+          </div>
+
+          <button
+            onClick={handleLogout}
+            className="bg-red-600 hover:bg-red-700 text-white
+                      px-4 py-2 rounded-lg text-sm font-medium transition"
+          >
+            Logout
+          </button>
         </div>
+
 
         {/* Actions */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">

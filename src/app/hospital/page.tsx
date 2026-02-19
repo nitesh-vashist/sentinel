@@ -146,6 +146,11 @@ export default function HospitalDashboard() {
     loadData();
   }, []);
 
+  const handleLogout = async () => {
+  await supabase.auth.signOut();
+  router.replace('/'); // replace prevents back navigation
+};
+
   /* ---------------- ACCEPT / REJECT ---------------- */
 
   const handleDecision = async (
@@ -183,9 +188,20 @@ export default function HospitalDashboard() {
     <main className="min-h-screen bg-gray-50 px-6 py-8">
       <div className="max-w-6xl mx-auto space-y-10">
 
-        <h1 className="text-2xl font-semibold text-gray-900">
-          Hospital Dashboard for {hospitalName}
-        </h1>
+        <div className="flex items-start justify-between">
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Hospital Dashboard for {hospitalName}
+          </h1>
+
+          <button
+            onClick={handleLogout}
+            className="bg-red-600 hover:bg-red-700 text-white
+                      px-4 py-2 rounded-lg text-sm font-medium transition"
+          >
+            Logout
+          </button>
+        </div>
+
 
         {/* ACCEPTED TRIALS */}
         <section className="bg-white border rounded-xl p-6">
