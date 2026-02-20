@@ -7,7 +7,7 @@ import { ethers } from 'ethers';
    Config
 ---------------------------------- */
 
-const ANCHOR_WINDOW_HOURS = 30*24;
+const ANCHOR_WINDOW_HOURS = 24;
 
 /* ----------------------------------
    Types
