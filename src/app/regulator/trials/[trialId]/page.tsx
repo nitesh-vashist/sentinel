@@ -164,9 +164,9 @@ export default function RegulatorTrialPage() {
           >
             Hospitals
           </TabButton>
-          <TabButton active={activeTab === 'ai'} onClick={() => setActiveTab('ai')}>
+          {/* <TabButton active={activeTab === 'ai'} onClick={() => setActiveTab('ai')}>
             AI Analysis
-          </TabButton>
+          </TabButton> */}
         </div>
 
         {/* CRF TAB */}
@@ -264,14 +264,14 @@ export default function RegulatorTrialPage() {
         )}
 
         {/* AI TAB */}
-        {activeTab === 'ai' && (
+        {/* {activeTab === 'ai' && (
           <section className="bg-white border rounded-xl p-6">
             <p className="text-gray-600">
               AI analysis will be available once sufficient visit data
               has been collected.
             </p>
           </section>
-        )}
+        )} */}
 
       </div>
     </main>
