@@ -105,6 +105,7 @@
 //   );
 // }
 
+
 import Link from 'next/link';
 import { 
   ShieldCheck, 
@@ -223,7 +224,7 @@ export default function Home() {
           </div>
 
           {/* Feature Card 2 */}
-          <div className="group relative bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:indigo-100 transition-all duration-300 md:-translate-y-4">
+          <div className="group relative bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all duration-300 md:-translate-y-4">
             <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-indigo-100 transition-all">
               <Activity className="w-6 h-6 text-indigo-600" />
             </div>
